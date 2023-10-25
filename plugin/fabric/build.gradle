@@ -3,7 +3,7 @@ plugins {
 }
 
 def targetJavaVersion = 17
-group = project.maven_group
+def plugin_version = project.plugin_version
 
 repositories {
      maven {
@@ -24,7 +24,37 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "net.kyori:adventure-platform-fabric:${project.adventure_fabric_version}"
+    implementation "net.kyori:adventure-platform-fabric:${project.adventure_fabric_version}"
     implementation "cloud.commandframework:cloud-fabric:${project.cloudpaper_version}"
+}
+
+shadowJar {
+    archiveBaseName.set('fabric')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+
+    dependencies {
+        include(dependency("net.kyori:adventure-platform-fabric:.*"))
+        include(dependency("cloud.commandframework:cloud-fabric:.*"))
+    }
+
+    mergeServiceFiles()
+    minimize()
+}
+
+//jar.finalizedBy('shadowJar')
+
+processResources {
+    inputs.property "version", plugin_version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": plugin_version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -39,7 +69,6 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    archivesBaseName = project.archives_base_name
 }
 
 jar {

@@ -4,6 +4,8 @@ compileJava {
     options.encoding = "UTF-8"
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
     // Dev only
     shadow project(path: ':core', configuration: 'shadow')

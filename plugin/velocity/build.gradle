@@ -2,6 +2,8 @@ compileJava {
     options.encoding = "UTF-8"
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
     // Include in jar
     implementation "com.google.inject:guice:${project.guice_version}"
